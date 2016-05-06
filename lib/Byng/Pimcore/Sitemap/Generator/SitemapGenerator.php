@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * This file is part of the pimcore-sitemap-plugin package.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Byng\Pimcore\Sitemap\Generator;
 
 use Pimcore\Config;
@@ -9,9 +22,9 @@ use Byng\Pimcore\Sitemap\Notifier\GoogleNotifier;
 use SimpleXMLElement;
 
 /**
- * Class SitemapGenerator
+ * Sitemap Generator
  *
- * @package PimcoreSitemapPlugin\Generator
+ * @author Ioannis Giakoumidis <ioannis@byng.co>
  */
 final class SitemapGenerator
 {
@@ -34,6 +47,7 @@ final class SitemapGenerator
      * @var DocumentGateway
      */
     private $documentGateway;
+
 
     /**
      * SitemapGenerator constructor.
@@ -58,13 +72,16 @@ final class SitemapGenerator
     public function generateXml()
     {
         $rootDocuments = $this->documentGateway->getRootDocuments();
+
         foreach ($rootDocuments as $rootDocument) {
             echo $this->hostUrl . $rootDocument->getFullPath() . "\n";
+
             $this->addUrlChild($rootDocument);
             $this->listAllChildren($rootDocument);
         }
 
         $this->xml->asXML(PIMCORE_DOCUMENT_ROOT . "/sitemap.xml");
+
         if (Config::getSystemConfig()->get("general")->get("environment") === "production") {
             $this->notifySearchEngines();
         }
@@ -74,12 +91,10 @@ final class SitemapGenerator
      * Finds all the children of a document recursively
      *
      * @param Document $document
-     *
      * @return void
      */
     private function listAllChildren(Document $document)
     {
-
         $children = $this->documentGateway->getChildDocs($document);
 
         foreach ($children as $child) {
@@ -87,14 +102,12 @@ final class SitemapGenerator
             $this->addUrlChild($child);
             $this->listAllChildren($child);
         }
-
     }
 
     /**
-     * Adds a url child in the xml file
+     * Adds a url child in the xml file.
      *
      * @param Document $document
-     *
      * @return void
      */
     private function addUrlChild(Document $document)
@@ -105,8 +118,9 @@ final class SitemapGenerator
     }
 
     /**
-     * @param $date
+     * Format a given date.
      *
+     * @param $date
      * @return string
      */
     private function getDateFormat($date)
@@ -115,11 +129,14 @@ final class SitemapGenerator
     }
 
     /**
+     * Notify search engines about the sitemap update.
+     *
      * @return void
      */
     private function notifySearchEngines()
     {
         $googleNotifier = new GoogleNotifier();
+
         if ($googleNotifier->notify()) {
             echo "Google has been notified \n";
         } else {
