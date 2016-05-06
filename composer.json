@@ -1,12 +1,18 @@
 {
     "name": "byng/pimcore-sitemap-plugin",
+    "decription": "XML sitemap generator for Pimcore. Built from the document tree.",
     "type": "pimcore-plugin",
     "license": "MIT",
+    "homepage": "https://github.com/byng-systems/pimcore-sitemap-plugin",
+    "keywords": [ "pimcore", "sitemap", "plugin" ],
     "authors": [
         {
             "name": "Ioannis Giakoumidis",
             "email": "ioannis@byng.co"
         }
     ],
-    "require": {}
+    "require": {
+        "php": ">=5.5",
+        "pimcore/installer-plugin": ">=1"
+    }
 }
