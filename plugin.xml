@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<zend-config>
+    <plugin>
+        <!-- the plugin name [A-Za-z_] -->
+        <pluginName>PimcoreSitemapPlugin</pluginName>
+
+        <!-- a short description -->
+        <pluginDescription><![CDATA[XML sitemap generator for Pimcore. Built from the document tree.]]></pluginDescription>
+
+        <!-- meta data -->
+        <pluginVersion>0.1.0</pluginVersion>
+        <pluginRevision>1</pluginRevision>
+
+        <!-- className of the plugin which extends Pimcore_API_Plugin_Abstract-->
+        <pluginClassName>Byng\Pimcore\Sitemap\SitemapPlugin</pluginClassName>
+
+        <!-- include paths relative to plugin-directory -->
+        <pluginIncludePaths>
+            <path>/PimcoreSitemapPlugin/lib</path>
+        </pluginIncludePaths>
+
+        <!-- namespaces to register with autoloader-->
+        <pluginNamespaces>
+            <namespace>Byng\Pimcore\Sitemap</namespace>
+        </pluginNamespaces>
+    </plugin>
+</zend-config>

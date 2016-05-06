@@ -1,0 +1,12 @@
+{
+    "name": "byng/pimcore-sitemap-plugin",
+    "type": "pimcore-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ioannis Giakoumidis",
+            "email": "ioannis@byng.co"
+        }
+    ],
+    "require": {}
+}
