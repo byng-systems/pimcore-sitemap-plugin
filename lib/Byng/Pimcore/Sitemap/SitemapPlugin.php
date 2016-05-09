@@ -16,7 +16,7 @@
 namespace Byng\Pimcore\Sitemap;
 
 use Pimcore\API\Plugin as PluginLib;
-use Pimcore\Model\Property\Predefined;
+use Pimcore\Model\Property\Predefined as PredefinedProperty;
 use Pimcore\Model\Schedule\Manager\Procedural as ProceduralScheduleManager;
 use Pimcore\Model\Schedule\Maintenance\Job as MaintenanceJob;
 use Byng\Pimcore\Sitemap\Generator\SitemapGenerator;
@@ -36,7 +36,6 @@ class SitemapPlugin extends PluginLib\AbstractPlugin implements PluginLib\Plugin
     public function init()
     {
         parent::init();
-
 
         \Pimcore::getEventManager()->attach("system.maintenance", function ($event) {
             /** @var ProceduralScheduleManager $target */
@@ -64,7 +63,7 @@ class SitemapPlugin extends PluginLib\AbstractPlugin implements PluginLib\Plugin
                 "inheritable" => true,
                 "data" => true
             ];
-            $property = Predefined::create();
+            $property = PredefinedProperty::create();
             $property->setValues($data);
 
             $property->save();
@@ -81,7 +80,7 @@ class SitemapPlugin extends PluginLib\AbstractPlugin implements PluginLib\Plugin
     public static function uninstall()
     {
         if (SitemapPlugin::isInstalled()) {
-            $property = Predefined::getByKey("sitemap_exclude");
+            $property = PredefinedProperty::getByKey("sitemap_exclude");
             $property->delete();
 
             return "Sitemap plugin is successfully uninstalled";
@@ -95,8 +94,8 @@ class SitemapPlugin extends PluginLib\AbstractPlugin implements PluginLib\Plugin
      */
     public static function isInstalled()
     {
-        $property = Predefined::getByKey("sitemap_exclude");
-        if ($property->getId()) {
+        $property = PredefinedProperty::getByKey("sitemap_exclude");
+        if ($property && $property->getId()) {
             return true;
         }
         return false;
