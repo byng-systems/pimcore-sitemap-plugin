@@ -25,64 +25,21 @@ use Pimcore\Model\Document;
 final class DocumentGateway
 {
     /**
-     * Returns all of the root documents that have parent id '1', and don't have the sitemap exclude
-     * property.
+     * Returns all the children of the parent with the
+     * given id
      *
+     * @param int $parentId
      * @return array
      */
-    public function getRootDocuments()
+    public function getChildren($parentId)
     {
         $list = new Document\Listing();
         $list->setOrderKey("index");
         $list->setOrder("ASC");
-        $list->setCondition("
-            type = 'page'
-            AND parentId = 1
-            AND id NOT IN (
-                SELECT 
-                    cid 
-                FROM 
-                    properties 
-                WHERE 
-                    ctype='document' 
-                AND 
-                    name='sitemap_exclude' 
-                AND data = 1
-            )
-        ");
-
-        return $list->load();
-    }
-
-    /**
-     * Get child documents of a given document
-     *
-     * @param Document $rootDocument
-     * @return array
-     */
-    public function getChildDocs(Document $rootDocument)
-    {
-        $condition = "
-            parentId = ? 
-            AND type = 'page' 
-            AND id NOT IN (
-                SELECT 
-                    cid 
-                FROM 
-                    properties 
-                WHERE 
-                    ctype = 'document' 
-                AND 
-                    name = 'sitemap_exclude' 
-                AND 
-                    data = 1
-            )
-        ";
-
-        $list = new Document\Listing();
-        $list->setCondition($condition, [
-            $rootDocument->getId()
-        ]);
+        $list->setCondition(
+            "parentId = ? ",
+            $parentId
+        );
 
         return $list->load();
     }
