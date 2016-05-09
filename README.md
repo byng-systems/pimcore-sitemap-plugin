@@ -10,7 +10,7 @@ XML sitemap generator for Pimcore. Built from the document tree.
 ## Pimcore Sitemap Plugin Settings 
 1. Set the name of the domain at imcore system settings below the Website tab
 2. Set up environment to Production at Pimcore System Settings below the Debug tab
-3. Add this property to every page that you want to exclude from the sitemap 
+3. Add the predefined property, ```sitemap_exclude```, to every page that you want to exclude from the sitemap 
     
 ## License
 
