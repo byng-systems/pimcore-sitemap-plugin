@@ -60,7 +60,7 @@ class SitemapPlugin extends PluginLib\AbstractPlugin implements PluginLib\Plugin
                 "description" => "Add this property to exclude a page from the sitemap",
                 "ctype" => "document",
                 "type" => "bool",
-                "inheritable" => true,
+                "inheritable" => false,
                 "data" => true
             ];
             $property = PredefinedProperty::create();

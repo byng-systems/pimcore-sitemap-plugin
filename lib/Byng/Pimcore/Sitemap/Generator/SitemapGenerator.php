@@ -71,15 +71,13 @@ final class SitemapGenerator
      */
     public function generateXml()
     {
-        $rootDocuments = $this->documentGateway->getRootDocuments();
+        // Get all the root elements with parentId '1'
+        $rootDocuments = $this->documentGateway->getChildren(1);
 
         foreach ($rootDocuments as $rootDocument) {
-            echo $this->hostUrl . $rootDocument->getFullPath() . "\n";
-
             $this->addUrlChild($rootDocument);
             $this->listAllChildren($rootDocument);
         }
-
         $this->xml->asXML(PIMCORE_DOCUMENT_ROOT . "/sitemap.xml");
 
         if (Config::getSystemConfig()->get("general")->get("environment") === "production") {
@@ -95,10 +93,9 @@ final class SitemapGenerator
      */
     private function listAllChildren(Document $document)
     {
-        $children = $this->documentGateway->getChildDocs($document);
+        $children = $this->documentGateway->getChildren($document->getId());
 
         foreach ($children as $child) {
-            echo $this->hostUrl . $child->getFullPath() . "\n";
             $this->addUrlChild($child);
             $this->listAllChildren($child);
         }
@@ -112,9 +109,15 @@ final class SitemapGenerator
      */
     private function addUrlChild(Document $document)
     {
-        $url = $this->urlset->addChild("url");
-        $url->addChild('loc', $this->hostUrl . $document->getFullPath());
-        $url->addChild('lastmod', $this->getDateFormat($document->getModificationDate()));
+        if (
+            $document instanceof Document\Page &&
+            !$document->getProperty("sitemap_exclude")
+        ) {
+            echo $this->hostUrl . $document->getFullPath() . "\n";
+            $url = $this->urlset->addChild("url");
+            $url->addChild('loc', $this->hostUrl . $document->getFullPath());
+            $url->addChild('lastmod', $this->getDateFormat($document->getModificationDate()));
+        }
     }
 
     /**
