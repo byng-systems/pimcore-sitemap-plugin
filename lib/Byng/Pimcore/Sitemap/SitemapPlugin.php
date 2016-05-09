@@ -16,6 +16,7 @@
 namespace Byng\Pimcore\Sitemap;
 
 use Pimcore\API\Plugin as PluginLib;
+use Pimcore\Model\Property\Predefined;
 use Pimcore\Model\Schedule\Manager\Procedural as ProceduralScheduleManager;
 use Pimcore\Model\Schedule\Maintenance\Job as MaintenanceJob;
 use Byng\Pimcore\Sitemap\Generator\SitemapGenerator;
@@ -27,7 +28,7 @@ use Byng\Pimcore\Sitemap\Generator\SitemapGenerator;
  */
 class SitemapPlugin extends PluginLib\AbstractPlugin implements PluginLib\PluginInterface
 {
-    const MAINTENANCE_JOB_GENERATE_SITEMAP = 'create-sitemap';
+    const MAINTENANCE_JOB_GENERATE_SITEMAP = "create-sitemap";
 
     /**
      * {@inheritdoc}
@@ -35,6 +36,7 @@ class SitemapPlugin extends PluginLib\AbstractPlugin implements PluginLib\Plugin
     public function init()
     {
         parent::init();
+
 
         \Pimcore::getEventManager()->attach("system.maintenance", function ($event) {
             /** @var ProceduralScheduleManager $target */
@@ -52,7 +54,25 @@ class SitemapPlugin extends PluginLib\AbstractPlugin implements PluginLib\Plugin
      */
     public static function install()
     {
-        return true;
+        if (!SitemapPlugin::isInstalled()) {
+            $data = [
+                "key" => "sitemap_exclude",
+                "name" => "Sitemap: Exclude page",
+                "description" => "Add this property to exclude a page from the sitemap",
+                "ctype" => "document",
+                "type" => "bool",
+                "inheritable" => true,
+                "data" => true
+            ];
+            $property = Predefined::create();
+            $property->setValues($data);
+
+            $property->save();
+
+            return "Sitemap plugin successfully installed";
+        }
+
+        return "There was a problem during the installation";
     }
 
     /**
@@ -60,7 +80,14 @@ class SitemapPlugin extends PluginLib\AbstractPlugin implements PluginLib\Plugin
      */
     public static function uninstall()
     {
-        return true;
+        if (SitemapPlugin::isInstalled()) {
+            $property = Predefined::getByKey("sitemap_exclude");
+            $property->delete();
+
+            return "Sitemap plugin is successfully uninstalled";
+        }
+
+        return "There was an error";
     }
 
     /**
@@ -68,6 +95,10 @@ class SitemapPlugin extends PluginLib\AbstractPlugin implements PluginLib\Plugin
      */
     public static function isInstalled()
     {
-        return true;
+        $property = Predefined::getByKey("sitemap_exclude");
+        if ($property->getId()) {
+            return true;
+        }
+        return false;
     }
 }
