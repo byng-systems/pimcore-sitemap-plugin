@@ -29,11 +29,6 @@ use SimpleXMLElement;
 final class SitemapGenerator
 {
     /**
-     * @var SimpleXMLElement
-     */
-    private $urlset;
-
-    /**
      * @var string
      */
     private $hostUrl;
@@ -57,11 +52,10 @@ final class SitemapGenerator
         $this->hostUrl = Config::getSystemConfig()->get("general")->get("domain");
         $this->documentGateway = new DocumentGateway();
 
-        $this->xml = new SimpleXMLElement('<xml/>');
-        $this->xml->addAttribute("version", "1.0");
-        $this->xml->addAttribute("encoding", "UTF-8");
-        $this->urlset = $this->xml->addChild("urlset");
-        $this->urlset->addAttribute("xmlns", "http://www.sitemaps.org/schemas/sitemap/0.9");
+        $this->xml = new SimpleXMLElement(
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>'
+        );
     }
 
     /**
@@ -114,7 +108,7 @@ final class SitemapGenerator
             !$document->getProperty("sitemap_exclude")
         ) {
             echo $this->hostUrl . $document->getFullPath() . "\n";
-            $url = $this->urlset->addChild("url");
+            $url = $this->xml->addChild("url");
             $url->addChild('loc', $this->hostUrl . $document->getFullPath());
             $url->addChild('lastmod', $this->getDateFormat($document->getModificationDate()));
         }
@@ -128,7 +122,7 @@ final class SitemapGenerator
      */
     private function getDateFormat($date)
     {
-        return gmdate("Y-m-dTH:i:s", $date);
+        return gmdate(DATE_ATOM, $date);
     }
 
     /**
